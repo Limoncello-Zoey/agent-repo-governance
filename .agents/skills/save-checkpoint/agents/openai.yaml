@@ -1,0 +1,4 @@
+interface:
+  display_name: "并行保存开发检查点"
+  short_description: "优先委派专用提交子智能体，守卫快照并生成中文阶段提交"
+  default_prompt: "使用 $save-checkpoint 优先委派专用提交子智能体，冻结并验证当前快照后完成中文阶段提交。"

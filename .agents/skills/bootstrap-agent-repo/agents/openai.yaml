@@ -1,0 +1,4 @@
+interface:
+  display_name: "初始化 Agent 友好型仓库"
+  short_description: "建立分层架构、接口文档与轻量 Agent 协作环境"
+  default_prompt: "使用 $bootstrap-agent-repo 检查当前项目，并建立默认两层的语义文档树、叶子接口文档和并行检查点流程。"

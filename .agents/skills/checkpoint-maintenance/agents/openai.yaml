@@ -1,0 +1,6 @@
+interface:
+  display_name: "检查点文档与 Git 维护"
+  short_description: "由提交子智能体维护文档、封存暂存树并完成可验证提交"
+  default_prompt: "使用 $checkpoint-maintenance 接管已冻结的检查点，维护受影响文档并完成验证提交。"
+policy:
+  allow_implicit_invocation: false
