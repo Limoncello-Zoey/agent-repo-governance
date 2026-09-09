@@ -40,3 +40,10 @@ Use `$save-checkpoint` or the phrase “存一版” for a staged-snapshot check
 - Relevant tests and checks pass or exceptions are reported.
 - Architecture, interface, invocation, and generated documentation reflect the change.
 - The final diff contains no unrelated files or unresolved placeholders.
+
+## Repository governance policy
+
+When configured, `.agents/repo-governance.json` records this project's protected
+branches and external source directories. Registered trees are checked against
+`.agents/external-code.snapshot.json` on checkpoints; changes require semantic review
+before accepting a baseline. Only include this route when those files are established.

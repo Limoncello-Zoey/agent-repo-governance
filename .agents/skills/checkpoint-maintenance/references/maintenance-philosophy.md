@@ -45,16 +45,39 @@ The initial staged index is a concurrency boundary:
 1. `freeze` records base `HEAD`, branch, title, and every initially staged path/mode/blob.
 2. `verify` confirms those facts before takeover.
 3. The main Agent may create later unstaged source edits, but they are not this checkpoint.
-4. The child may add or restage its own maintenance docs after takeover. It must not rerun the initial snapshot check after legitimate doc restaging.
+4. The child may add new maintenance docs and restage initially staged docs only when listed in frozen `maintenance_paths`. Rerun verification after maintenance; it checks all other original entries without rejecting the explicit documentation exception.
 5. The child reviews the whole final staged diff, runs staged whitespace checks, and confirms no later source work, secret, temporary file, or unrelated change entered the index.
 6. `seal` records the complete final index tree immediately before commit.
 7. `verify-commit --clear` requires the new commit's tree to equal the sealed tree and its sole parent to equal the frozen base `HEAD`; only then is the lock removed.
 
 If any identity, index, branch, parent, or tree invariant fails, stop. Do not reset, stash, rebase, or “fix” the repository by guesswork.
 
-## 6. Branch and history neutrality
+Documents explicitly listed in `maintenance_paths` at freeze belong to the child even
+when initially staged. Their original blobs remain in the lock for review; only those
+entries may change before sealing. This permits semantic maintenance and title markers
+without relaxing source immutability. Request refreezing rather than expanding ownership
+by editing the lock.
 
-Support ordinary, feature, release, development, and otherwise unusual branch names. Use the currently checked-out branch unless the user explicitly requests another operation. A checkpoint commit normally has the frozen `base_head` as its sole parent, whether that base is a normal commit or a merge commit. Do not assume a single-line history. Branch switching, rebase, merge, and other history operations require explicit user intent and remain under the delegated child's Git ownership.
+## 6. Project branch policy and external evidence
+
+Follow the project's branch policy, recorded for the helper in
+`.agents/repo-governance.json`. Configured protected branches cannot host a checkpoint.
+The main Agent normalizes before freezing; the child never switches branches to repair
+a handoff. Existing non-protected branch names remain valid. Without configured
+protection, retain branch-neutral behavior rather than assuming a main/dev model.
+
+A configured external source registry adds a second frozen evidence surface beyond
+Git's index. Review the original locked baseline-to-candidate report even after a live
+check says unchanged following baseline acceptance. Independently reproduce the frozen
+digest, maintain affected semantic docs, then accept and explicitly stage the baseline.
+Configuration changes and exclusions change review coverage and need semantic review.
+This does not authorize scanning arbitrary ignored caches or other machine state.
+
+A checkpoint commit has the frozen base as its sole parent. Merge previews can inform
+a separately authorized history operation, but an actual two-parent merge cannot be
+verified as this checkpoint. Hand back or abort before executing such an operation,
+then refreeze any subsequent checkpoint at the resulting HEAD. Never silently relax
+parent/tree checks to make an incompatible history operation pass.
 
 ## 7. Commit message and verification
 

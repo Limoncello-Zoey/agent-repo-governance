@@ -144,3 +144,13 @@ Add the following only with project evidence or explicit user intent:
 - Keep framework-specific documentation structure when it already works.
 - Prefer updating one authoritative source and linking to it over creating competing documents.
 - Explain omissions in the final handoff so absence is intentional rather than accidental.
+
+## Optional executable repository policy
+
+Bootstrap records verified branch rules and external source scope in the tracked
+`.agents/repo-governance.json`. Use the sibling save-checkpoint policy reference for
+its schema. An empty external list is valid; do not force a vendor layout or ecosystem.
+Discovery is bounded and read-only; automatic registration requires repository evidence,
+and uncertain candidates require user input. Initial external fingerprints require a
+source review before baseline creation. Missing review is reported as incomplete.
+Configuration and baseline changes remain uncommitted during bootstrap.
