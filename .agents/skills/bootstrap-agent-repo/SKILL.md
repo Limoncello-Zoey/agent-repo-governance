@@ -30,7 +30,9 @@ Routing has a cost in tokens, Agent turns, context, waiting time, and misrouting
 
 - Inspect before editing and preserve existing instructions, docs, skills, configuration, and user changes.
 - Do **not** modify business code, source code, tests, generated runtime logic, dependencies, or project behavior during bootstrap.
-- Do **not** commit, push, switch branches, rebase, merge, or rewrite Git history during bootstrap.
+- Follow the verified project branch policy before editing. If on a protected branch, inspect HEAD, index/worktree/untracked state, configured local base, target ref and unfinished operations first. Switch through the existing base and create a task branch named with the project prefix plus local `YYYYMMDD-HHMMSS`; preserve established non-protected branches. Carry dirty state only across the same base commit. Never infer `main/dev` merely from this Skill, or stash/reset/force-switch to move work. Stop on conflicts, detached/unborn HEAD, missing base or ambiguous history.
+- Invocation authorizes ordinary inspections, scoped edits, validation and required task-branch creation. Do not request repetitive confirmation; ask only when ambiguity changes scope or policy. This does not authorize publication or unrelated work.
+- Do **not** commit, push, rebase, merge, or rewrite Git history during bootstrap. Ordinary branch normalization under the verified project policy is allowed; leave changes uncommitted unless the user separately requests a commit.
 - It is allowed to create or update the minimum `AGENTS.md`, project documentation indexes/routes, task-state convention, and Skill files required for this Agent infrastructure.
 - Do not copy or “unpack” this general philosophy into project docs. It remains inside the installed Skills. Existing `docs/agent-development-workflow.md` or similar user documentation must be preserved unless the user explicitly requests migration; do not generate another copy automatically.
 - Do not add secrets, machine-specific absolute paths, MCP servers, Hooks, CI, or complex automation without repository evidence or explicit user intent.
@@ -78,6 +80,37 @@ Each index explains its scope/boundary, immediate children and layering, runtime
 
 Add `last_reviewed_commit_title` only to authoritative documents actually reviewed. During bootstrap it is normally `null`; do not touch every Markdown file.
 
+### Repository policy and external code registry
+
+Inspect the existing branch rules and external source/dependency layout. Resolve the
+peer `save-checkpoint` Skill and read its `references/repository-policy.md` for the
+configuration schema, read-only discovery, first-baseline review and migration rules.
+Run its `scripts/external_snapshot.py discover --repo <repo>` automatically as a cheap
+candidate inventory; combine it with manifests, build references, ignore rules and
+`.gitmodules`. Directory names are hints, not proof of external source ownership.
+If the peer is missing, report the gap and perform a bounded manual inventory.
+
+Create or merge the tracked `.agents/repo-governance.json` using verified project
+policy. [assets/repo-governance.template.json](assets/repo-governance.template.json)
+is a neutral starting point, not a main/dev default. Record protected branches, base
+and task prefix only when evidenced. Confirm the effective policy before mutations;
+if the config is not yet present, apply the verified project instructions directly
+rather than treating an unconfigured helper's permissive result as authorization.
+
+Register evidenced external source roots with stable IDs, relative paths, intentional
+exclusions and project documentation routes. Accept manual directory selections. Ask
+one focused question for unresolved candidates or unexpectedly large review scope;
+continue independent bootstrap work while awaiting the answer. Do not enroll caches,
+build outputs, secrets or datasets merely because Git ignores them. Preserve existing
+entries; document any deliberate coverage change. Explicitly record an empty list when
+no external trees need this workflow and report discovery limitations.
+
+For registered roots, review the initial source and maintain semantic documentation
+before running `external_snapshot.py snapshot --repo <repo> --reviewed`. Missing
+baseline means initialization is incomplete, not that the tree is unchanged. Never
+silently accept pre-existing changes or overwrite a legacy baseline. Add registry and
+baseline routes to `AGENTS.md`; leave all resulting files uncommitted.
+
 ### Task state and peer Skills
 
 Create a task/branch state template only when work regularly spans sessions or people and no established tracker exists. Keep it temporary and promote durable facts into normal docs or ADRs.
@@ -103,5 +136,6 @@ After editing, rerun the optional inventory and verify:
 4. Reviewed leaf docs contain real invocation evidence; no template placeholders remain.
 5. New/edited files pass `git diff --check` when a Git worktree exists.
 6. No unrelated user changes, secrets, or machine-local paths were overwritten or added.
+7. The registry matches verified branch rules and external source scope; configured roots have reviewed initial baselines or an explicit pending-review limitation. Run the read-only external `check` when enabled, and ensure docs routes resolve.
 
 Leave changes uncommitted unless the user explicitly requested a commit. Report files changed, verified entry points, omitted optional infrastructure, peer Skill availability, unresolved uncertainties, and the next checkpoint invocation (`$save-checkpoint` or “存一版”).
